@@ -1,6 +1,6 @@
 import MovieCard from "../Components/MovieCard";
 import { useState, useEffect } from "react";
-import {searchMovies,getPopularMovies} from "../services/api";
+import {searchMovies,getPopularMovies} from "../services/api.js";
 
 function Home () {
 
@@ -34,7 +34,23 @@ function Home () {
 
     const handleSearch = () => {
         e.preventDefault()
-        alert(searchQuery)
+        
+        if (!searchQuery.trim()) return
+
+        if (loading) return
+
+        setLoading(true)
+        try {
+            const searchResults = searchMovies(searchQuery)
+            setMovies(searchResults)
+            setError(null)
+        }catch(err){
+            console.log(err)
+            setError("Failed to search movies ....")
+        }finally {
+            setLoading(false)
+        }
+
         setSearchQuery("........")
     };
 
@@ -51,6 +67,8 @@ function Home () {
                     
                     <button type="submit" className="search-button"></button>
             </form>
+
+            {error && <div className="error-message">{error}</div>}
 
             {loading ? (
   <div className="loading">Loading ...</div>
